@@ -5,4 +5,4 @@
 * jspdf
 * jspdf-autotable
 <br/>
-Dentro de la carpeta del proyecto tienes un pdf conc apturas de como usar el programa correctamente.
+Dentro de la carpeta del proyecto tienes un pdf con capturas de como usar el programa correctamente.
