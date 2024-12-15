@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        #data-table {
+            border-collapse: collapse; /* Make borders look unified */
+            width: 90%; /* Make the table occupy most of the page width */
+            margin: 20px auto; /* Center the table on the page */
+            font-family: Arial, sans-serif; /* Cleaner font */
+            font-size: 14px; /* Adjust font size */
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Informe mensual de pedidos.</h1>
+    <div style="text-align: center;">
+    <button onclick="generatePDF()">Descargar PDF</button>
+    <button onclick="location.href='maker.html'">Hacer nuevos pedidos</button>
+    <button onclick="location.href='database.html'">Consultar la base de datos</button>
+    </div>
+    <!--Muestra todas tartas de cada curso.-->
+    <h2 style="text-align: center;">Todos los libros vendidos según curso</h2>
+    <canvas id="pieChart" width="100" height="100"></canvas>
+    <h2 style="text-align: center;">Educación Básica</h2>
+    <canvas id="basicPieChart" width="100" height="100"></canvas>
+    <h2 style="text-align: center;">Pictos</h2>
+    <canvas id="pictPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Educación Primaria</h2>
+    <canvas id="primaPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Educación Permanente</h2>
+    <canvas id="permaPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Sección Excepcional</h2>
+    <canvas id="excepPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Educación de 1º ESO</h2>
+    <canvas id="pesoPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Educación de 2º ESO</h2>
+    <canvas id="sesoPieChart" width="100" height="100"></canvas>
+    <br>
+    <h2 style="text-align: center;">Educación de 3º ESO</h2>
+    <canvas id="tesoPieChart" width="100" height="100"></canvas>
+    <br>
+    <!--Muestra todos los registros del mes que pediste.-->
+    <h2 style="text-align: center;">Todas las ventas de este mes</h2>
+    <table id="data-table" border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Título</th>
+                <th>Curso</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be dynamically populated -->
+        </tbody>
+    </table>
+    <script>
+        //Saca todos los datos del mes que pediste para reflejar en la tarta.
+        async function fetchData() {
+            try {
+                //Te pide el mes que pusiste en prompt. Debes ponerlo en este formato: MM-YYYY
+                const fecha = prompt('dame una fecha porfavor');
+                const recordsResponse = await fetch(`/monthly-data?fecha=${encodeURIComponent(fecha)}`);
+                const recordsData = await recordsResponse.json();
+                //Todas las tartas para usar en el html.
+                Ctx = document.getElementById('pieChart').getContext('2d');
+                BasicCtx = document.getElementById('basicPieChart').getContext('2d');
+                PictosCtx = document.getElementById('pictPieChart').getContext('2d');
+                PrimaCtx = document.getElementById('primaPieChart').getContext('2d');
+                PermaCtx = document.getElementById('permaPieChart').getContext('2d');
+                ExcepCtx = document.getElementById('excepPieChart').getContext('2d');
+                PesoCtx = document.getElementById('pesoPieChart').getContext('2d');
+                SesoCtx = document.getElementById('sesoPieChart').getContext('2d');
+                TesoCtx = document.getElementById('tesoPieChart').getContext('2d');
+                //Todas las consultas son iguales, una por cada curso de la editorial.
+                fetch(`/piechart?fecha=${encodeURIComponent(fecha)}`)
+                .then(response => response.json())
+                .then(data => {
+                    //Coge los nombres y sumas de datos de cada libro vendido.
+                    const labels = Object.keys(data);  
+                    const counts = Object.values(data);
+                    // A diferencia de los demás, acá hice un array manual de colores para la tarta.
+                    const colores = ['#F7F36F','#04148C','#8ACE00','#FFCCFF','#DB1D29','#66164b','#EDA426','#0EEADF','#A05DE3'];
+                    createPieChart(Ctx, labels, counts, colores);
+                })
+                .catch(error => console.error('Error fetching book data:', error));
+                fetch(`/pictos?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data);
+                        const counts = Object.values(data); 
+                        //En los demás, decidí dejar los colores al azar, luego muestro la función que lo hace.
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(PictosCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                fetch(`/basica?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data);  
+                        const counts = Object.values(data);
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(BasicCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                fetch(`/primaria?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data);  
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(PrimaCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error)); 
+                fetch(`/permanente?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data); 
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(PermaCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                fetch(`/excepcional?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data);  
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(ExcepCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                fetch(`/1ESO?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data); 
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(PesoCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                fetch(`/2ESO?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data);
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(SesoCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));   
+                fetch(`/3ESO?fecha=${encodeURIComponent(fecha)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const labels = Object.keys(data); 
+                        const counts = Object.values(data); 
+                        const colores = generateRandomColors(labels.length);
+                        createPieChart(TesoCtx, labels, counts, colores);
+                    })
+                    .catch(error => console.error('Error fetching class data:', error));
+                //Coge todos los registros y los pone en una tabla.
+                populateTable(recordsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        function generateRandomColors(count) {
+            //Crea un array vacío.
+            const colors = [];
+            //Usa un input el cual será la cantidad de distintos libros que se vendieron.
+            for (let i = 0; i < count; i++) {
+                // A cada paso del bucle se dará un numero redondeado al azar del código RGB, dejando la saturación en el 80%.
+                const randomColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.8)`;
+                colors.push(randomColor);
+            }
+            return colors;
+        }
+        function populateTable(data) {
+            //Igual que en las funciones de cargar vacía la tabla y la rellena con los pedidos de este mes.
+            const tableBody = document.getElementById('data-table').querySelector('tbody');
+            tableBody.innerHTML = '';
+            data.forEach(record => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${record.ID}</td>
+                    <td>${record.Cliente}</td>
+                    <td>${record.Fecha}</td>
+                    <td>${record.Libro}</td>
+                    <td>${record.Curso}</td>
+                    <td>${record.Cantidad}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+        // Hace una tartita básica en html.
+        function createPieChart(ctx, labels, counts, colores,message) {
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    //Los nombres de los datos son lo que se dará en labels,counts es la suma total de libros vendidos por cada titulo, y colores es encargado por generateColors.
+                    labels: labels,
+                    datasets: [{
+                        label: 'Libros vendidos',
+                        data: counts,
+                        backgroundColor: colores,
+                    }]
+                }
+            });
+        }
+        //Hace un pdf de varias páginas y tartitas, junto con la tabla con todos los pedidos del mes.
+        function generatePDF() {
+            //Crea el PDF
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.text('Informe mensual', 80, 15);
+            //Hace las tartas por cada curso.
+            pdf.text('Tarta de todos los libros vendidos', 70, 30);
+            const canvas = document.getElementById('pieChart');
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 55, 35, 90, 90);
+            pdf.text('Educación Básica',75,135)
+            const canvas2 = document.getElementById('basicPieChart');
+            const imgDataBas = canvas2.toDataURL('image2/png');
+            pdf.addImage(imgDataBas, 'PNG', 35, 140, 140, 140);
+            pdf.addPage();
+            pdf.text('Libros de Pictos',30,15)
+            const canvas3 = document.getElementById('pictPieChart');
+            const imgDataPic = canvas3.toDataURL('image3/png');
+            pdf.addImage(imgDataPic, 'PNG', 5, 25, 90, 90);
+            pdf.text('Educación Primaria',130,15)
+            const canvas4 = document.getElementById('primaPieChart');
+            const imgDataPrima = canvas4.toDataURL('image4/png');
+            pdf.addImage(imgDataPrima, 'PNG', 105, 25, 90, 90);
+            pdf.text('Educación Permanente',30,145)
+            const canvas5 = document.getElementById('permaPieChart');
+            const imgDataPerma = canvas5.toDataURL('image5/png');
+            pdf.addImage(imgDataPerma, 'PNG', 5, 155, 90, 90);
+            pdf.text('Sección Excepcional',130,145)
+            const canvas6 = document.getElementById('excepPieChart');
+            const imgDataExcep = canvas6.toDataURL('image6/png');
+            pdf.addImage(imgDataExcep, 'PNG', 105, 155, 90, 90);
+            pdf.addPage();
+            pdf.text('Educación de 1º ESO',75,15)
+            const canvas7 = document.getElementById('pesoPieChart');
+            const imgDataPeso = canvas7.toDataURL('image7/png');
+            pdf.addImage(imgDataPeso, 'PNG', 35, 25, 140, 140);
+            pdf.text('Educación de 2º ESO',30,175)
+            const canvas8 = document.getElementById('sesoPieChart');
+            const imgDataSeso = canvas8.toDataURL('image8/png');
+            pdf.addImage(imgDataSeso, 'PNG', 5, 180, 100, 100);
+            pdf.text('Educación de 3º ESO',130,175)
+            const canvas9 = document.getElementById('tesoPieChart');
+            const imgDataTeso = canvas9.toDataURL('image9/png');
+            pdf.addImage(imgDataTeso, 'PNG', 105, 180, 100, 100);
+            pdf.addPage();
+            //En la última página se hace la tabla. Con tema de cebra para que sea mas calmado a los ojos.
+            pdf.text('Historial de los pedidos de este mes:', 80, 20);
+            const table = document.getElementById('data-table');
+            //Query selectors que coge los nombres de las celdas y los datos de cada pedido.
+            const headers = Array.from(table.querySelectorAll('th')).map(header => header.innerText);
+            const rows = Array.from(table.querySelectorAll('tbody tr')).map(row => Array.from(row.querySelectorAll('td')).map(cell => cell.innerText));
+            pdf.autoTable({
+                head: [headers],
+                body: rows, 
+                startY: 25, 
+                theme: 'striped', 
+                headStyles: { fillColor: [244, 244, 244], textColor: 0, fontStyle: 'bold' },
+                bodyStyles: { textColor: 50 },
+                alternateRowStyles: { fillColor: [240, 240, 240] },
+                margin: { left: 10, right: 10 }
+            });
+            //Guarda el resultado en un PDF.
+            pdf.save('informe.pdf');
+        }
+        //Por defecto coge los datos del mes que le hayas dado.
+        window.onload = async function(){fetchData();};
+    </script>
+</body>
+</html>

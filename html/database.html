@@ -1,0 +1,303 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de datos de la editorial</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+        <script>
+            //Esta función muestra toda la base de datos
+            function Cargar(){
+                //Llama la función para cogerlo todo.
+                fetch('/data')
+                    //Una vez tiene la base de datos, los pasa a json
+                    .then(response => response.json())
+                    .then(data => {
+                        //En un bucle foreach pone todos los datos en la tabla celda por celda.
+                        const tableBody = document.getElementById('data-body');
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td>${row.ID}</td>
+                            <td>${row.Cliente}</td>
+                            <td>${row.Fecha}</td>
+                            <td>${row.Libro}</td>
+                            <td>${row.Curso}</td>
+                            <td>${row.Cantidad}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+                }
+            function ConsultarID(){
+                //Casi igual que consultar. Sólo que usa un filtro distinto a los demás.
+                Iden = prompt("Dame la ID que quieras:");
+                fetch(`/idquery?value=${encodeURIComponent(Iden)}`)
+                    .then(response => {
+                    //Si no hay registros, lanzará error 404. Si hay error 404, te dirá que no hay ese registro y se irá.
+                    if (response.status === 404) {
+                        alert('No hay ningún registro parecido.');
+                    }
+                    return response.json();})
+                    .then(data => {
+                        //Rellena en un bucle todos los datos en la tabla.
+                        const tableBody = document.getElementById('data-body');
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td>${row.ID}</td>
+                            <td>${row.Cliente}</td>
+                            <td>${row.Fecha}</td>
+                            <td>${row.Libro}</td>
+                            <td>${row.Curso}</td>
+                            <td>${row.Cantidad}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                         });
+                    })
+                    .catch(error => console.error('Error fetching data:', error));
+            }
+            function Consultar() {
+                //Prompt que pedirá una letra.No importa si es mayúscula o no.
+                const Letra = prompt("Escoje:\nI para IDs\nC para Clientes\nF para Fechas\nT para Titulos de libro\nE para curso de clase\nN para Cantidades\nM para mostrar toda la tabla de nuevo.").toUpperCase();
+                let Parametro;
+                let tableBody;
+                //El parametro cambiará según la letra que le haya puesto por la fila de la base de datos que escogiste.
+                switch (Letra) {
+                    case 'I':
+                    //I usa este método especial para no tener conflicto con las consultas relativas.
+                    tableBody = document.getElementById('data-body');
+                    //Vacía la tabla antes de rellenarla. Verás este comando varias veces.
+                    tableBody.innerHTML = '';
+                    ConsultarID()
+                    return;
+                    case 'C':
+                        Parametro = 'Cliente';
+                        break;
+                    case 'F':
+                        Parametro = 'Fecha';
+                        break;
+                    case 'T':
+                        Parametro = 'Libro';
+                        break;
+                    case 'E':
+                        Parametro = 'Curso';
+                        break;    
+                    case 'N':
+                        Parametro = 'Cantidad';
+                        break;
+                    case 'M':
+                        // M mostrará toda la tabla usando el método cargar dicho anteriormente.
+                        tableBody = document.getElementById('data-body');
+                        //Vacía la tabla antes de rellenarla
+                        tableBody.innerHTML = '';
+                        Cargar();
+                        return;   
+                    default:
+                        alert("Coge una de las letras que dije, porfavor.");
+                        return;
+                }
+                // Prompt para hacer de filtro.
+                const Input = prompt(`Dime el/la ${Parametro} que quieras:`);
+                if (!Input){alert("debes poner un valor acá!")};
+                //Este fetch dará una busqueda relativa. Es decir, te dará todo lo que tenga las letras que pusiste sin importar su posición. 
+                fetch(`/query?parameter=${encodeURIComponent(Parametro)}&value=${encodeURIComponent(Input)}`)
+                .then(response => { 
+                    if (!response.ok) {
+                        throw new Error('Fallo en la respuesta.');
+                    }
+                    return response.json();})
+                .then(data => {
+                    const tableBody = document.getElementById('data-body');
+                    //Vacía la tabla y la rellena.
+                    tableBody.innerHTML = '';
+                    data.forEach(row => {
+                        //Si no hay datos, te dirá que no hay resultados en la tabla.
+                        if (data.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="6">No results found</td></tr>';
+                        }
+                        else{
+                            //Rellena la tabla, celda por celda.
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${row.ID}</td>
+                                <td>${row.Cliente}</td>
+                                <td>${row.Fecha}</td>
+                                <td>${row.Libro}</td>
+                                <td>${row.Curso}</td>
+                                <td>${row.Cantidad}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        }
+                    });
+                })
+                .catch(error => console.error('Error performing query:', error));
+            }   
+            function Borrar() {
+                const tableBody = document.getElementById('data-body');
+                //Pide una ID pa borrar.
+                const id = prompt("Dame la ID que quieras borrar:");
+                if (!id) {
+                    alert("No se pudo niguna ID por lo que no puedo borrar.");
+                    return;
+                }
+                //Borra la ID de la tabla que has puesto.
+                fetch(`/delete?id=${encodeURIComponent(id)}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('No hubo respuesta.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    //Si salió bien,te dice que borró la ID. Vacía y rellena la tabla sin la ID borrada. Si no, te dice que no está ahí.
+                    if (data.success) {
+                        alert(`La ID ${id} se borró exitosamente.`);
+                        tableBody.innerHTML = '';
+                        Cargar();
+                    } else {
+                        alert(`La ID ${idToDelete} no está aquí.`);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+            function BorrarTodo() {
+                //Te pide un prompt antes de darle a este botón. Si no pones 'Si' exactamente no hara nada.
+                const confirmation = prompt("Estás seguro? Pon exactamente 'Si' para confirmarlo.");
+                if (confirmation !== 'Si') {
+                    alert("Se cancela.");
+                    return;
+                }
+                fetch('/delete-all', {method: 'DELETE',})
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    //Si has puesto Si en el prompt,te dirá que se borró toda la tabla y la tendrás vacía.
+                    if (data.success) {
+                        alert("Se ha borrado toda la tabla.");
+                        const tbody = document.getElementById('data-body');
+                        tbody.innerHTML = '';
+                    } else {
+                        alert("Hubo un fallo a revisar.");
+                    }
+                })
+                .catch(error => console.error('Error deleting all data:', error));
+            }
+        async function Cambiar() {
+                const tableBody = document.getElementById('data-body');
+                //Te pide la ID que quieres cambiar.
+                const iden = prompt("Dame la ID de lo que quieres cambiar");
+                if (!iden) {
+                    alert("Necesito una ID!");
+                    return;
+                }
+                //Empieza el loop dentro de otro.
+                let continuar = true;
+                while(continuar){
+                let columna;
+                //Mientras continuar sea true. Seguirá el bucle. Para romperlo tienes que coger o I o X para irte.
+                while (true) {
+                    //Otro switch que te dará multiples opciones para escoger columna para cambiar. Igual que en consultar.
+                    const parameter = prompt("Escoje:\nI para IDs\nC para Clientes\nF para Fechas\nT para Titulos de libro\nE para Cursos\nN para Cantidades\nX para cambiar nada más").toUpperCase();
+                    if (parameter === 'I') {
+                        columna = 'ID';
+                        continuar = false;
+                        break;
+                    } else if (parameter === 'C') {
+                        columna = 'Cliente';
+                        break;
+                    } else if (parameter === 'F') {
+                        columna = 'Fecha';
+                        break;
+                    } else if (parameter === 'T') {
+                        columna = 'Libro';
+                        break;
+                    } else if (parameter === 'E') {
+                        columna = 'Curso';
+                        break;
+                    } else if (parameter === 'N') {
+                        columna = 'Cantidad';
+                        break;
+                    }
+                    else if (parameter === 'X') {
+                        continuar = false;
+                        alert("Cambio cancelado.");
+                        return;
+                    } else {
+                        alert("Escribe una de las 7 letras anteriores.");
+                        return;
+                    }
+                }
+                    //Prompt que te pide el nuevo valor.
+                    const value = prompt(`Que quieres poner por ${columna}:`);
+                    if (!value) {
+                        alert("Dame un nuevo valor anda");
+                        return;
+                    }
+                //El grupo de datos será mandado en un objeto JSON.
+                await fetch('http://localhost:3000/update', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json',},
+                    body: JSON.stringify({ iden, columna, value }),
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    //Si salió bien, se vacía la tabla y se rellena con el cambio nuevo.
+                    if (data.success) {
+                        alert('Cambio hecho.');
+                        tableBody.innerHTML='';
+                        Cargar();  
+                    } else {
+                        alert(`No se encontró la ID ${iden}`);
+                    }
+                })
+                .catch(error => console.error('Error de actualización:', error));
+            }        
+        }
+        //Por defecto cuando entres a esta página Se mostrará toda la base de datos.
+        window.onload = Cargar();     
+        </script>
+</head>
+<body>
+    <h1>Que quieres hacer aquí?</h1>
+    <button id ="Consultar" onclick="Consultar()">Consultar pedido</button>
+    <button onclick="location.href='maker.html'">Hacer pedido</button>
+    <button id="Cambiar" onclick="Cambiar()">Cambiar pedido</button>
+    <button id = "Borrar" onclick="Borrar()">Borrar pedido</button>
+    <button id = "BorrarTodo" onclick ="BorrarTodo()" style="float: right; margin-right: 10px;">Limpiar la base de datos</button>
+    <button onclick="location.href='repmaker.html'" style="margin-left: 80px;">Hacer informe mensual</button>
+    <br></br>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Título</th>
+                <th>Curso</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody id="data-body">          
+        </tbody>
+    </table>
+</body>
+</html>

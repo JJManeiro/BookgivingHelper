@@ -1,0 +1,435 @@
+<html>
+    <head>
+        <title>Realizando entrega</title>
+        <style>
+            #data-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+        </style>
+        <script>
+        //Este es el contador que se añade a los IDs de los pedidos.
+        let c = 1;
+            //Esta función llenas las barras de objetos del maker con todos los libros que hay en la editorial.
+            function actualizarLibros() {
+                const nivel = document.getElementById("Tipo").value;
+                const libros = document.getElementById("Libros");
+                const textarea = document.getElementById("titulo");
+                libros.innerHTML = ""; // Limpia las opciones anteriores una vez cambies de tipo de libro.
+                textarea.style.display = "none";
+                libros.style.display = "block";
+                librol.style.display = "block";
+                let opciones = [];
+                //todos los libros de la editorial están acá.
+                if (nivel === "tipo1") {
+                    opciones = ["Leo Palabras 0 - Manual", "Leo Palabras 1", "Leo Palabras 2", "Leo Palabras 3", "Leo Palabras 4", 
+                                "Leo Palabras 5", "Leo Palabras 6", "Leo Palabras 7", "Leo Palabras 8", "Leo Palabras 9",
+                                "Leo Palabras 10", "Leo Palabras 11", "Leo Palabras 12", "Escribo letras y numeros 1",
+                                "Escribo numeros 2", "Escribo numeros 3", "Escribo consonantes 4", "Escribo consonantes 5",
+                                "Escribo consonantes 6", "Escribo consonantes 7", "Escribo consonantes 8", "Escribo consonantes 9",
+                                "Escribo Palabras 1", "Escribo Palabras 2", "Escribo Palabras 3", "Escribo Palabras 4",
+                                "Escribo Palabras 5", "Escribo Palabras 6", "Escribo Palabras 7", "Empiezo a redactar",
+                                "Calculo 1", "Calculo 2", "Calculo 3", "Calculo 4", "Calculo 5", "Euros Plata 1", "Euros Plata 2",
+                                "Euros Plata 3", "Euros Plata 4", "Euros Plata 5", "Euros Oro 1", "Euros Oro 2", "Euros Oro 3"];
+                } 
+                else if (nivel === "tipo2") {
+                    opciones = ["Mejoro mi comprension lectora 1", "Mejoro mi comprension lectora 2", "Avanzo 1", "Avanzo 2", "Avanzo 3",
+                                "Avanzo 4", "Avanzo 5", "Avanzo 6", "Avanzo 7", "Paso a paso 1", "Paso a paso 2", "Paso a paso 3",
+                                "Paso a paso 4", "Paso a paso 5", "Aprendo Ingles 1", "Aprendo Ingles 2", "Ingles 1", "Ingles 2",
+                                "Lendas 1", "Lendas 2", "Lendas 3", "Escritura Creativa", "Matematicas 1 - Trimestre 1"];
+                }
+                else if (nivel === "tipo3") {
+                    opciones = ["Aprendo los números", "Ciencias Naturales 1", "Ciencias Naturales 2", "Ciencias Naturales 3",
+                                "Ciencias Naturales 4", "Ciencias Sociales 1", "Ciencias Sociales 2", "Ciencias Sociales 3",
+                                "Aprendo Lengua 1", "Aprendo Lengua 2", "Aprendo Ingles con Pictos", "Aprendo matematicas 1",
+                                "Aprendo matematicas 2", "Aprendo Euros con Pictos"];
+                }
+                else if  (nivel === "tipo4") {
+                    opciones = ["Orientación Temporal 1","Orientación Temporal 2","Habilidades Sociales 1","Habilidades Sociales 2",
+                                "Lectura Funcional 1","Lectura Funcional 2","Empiezo a multiplicar","Empiezo a dividir",
+                                "Resuelvo Problemas de la Vida Diaria","Ciencias Naturales 5º Primaria"];
+                }    
+                else if (nivel === "tipo5") {
+                    opciones = ["Ambito de la comunicacion"];
+                }    
+                else if (nivel === "tipo6"){
+                    opciones = ["Matemáticas Nivel 1 - Trimestre 1", "Matemáticas Nivel 1 - Trimestre 2",
+                                "Matemáticas Nivel 1 - Trimestre 3", "Matemáticas Nivel 2 - Trimestre 1",
+                                "Matemáticas Nivel 2 - Trimestre 2", "Matemáticas Nivel 2 - Trimestre 3",
+                                "Lengua Castellana Nivel 1 - Trimestre 1", "Lengua Castellana Nivel 1 - Trimestre 2",
+                                "Lengua Castellana Nivel 1 - Trimestre 3", "Lengua Castellana Nivel 2 - Trimestre 1",
+                                "Lengua Castellana Nivel 2 - Trimestre 2", "Lengua Castellana Nivel 2 - Trimestre 3",
+                                "Geografia Nivel 1", "Geografia Nivel 2", "Historia Nivel 1", "Historia Nivel 2",
+                                "Biologia Nivel 1", "Biologia Nivel 2", "Geologia Nivel 1", "Geologia Nivel 2",
+                                "Ciencias Naturales Nivel 1 - Trimestre 1", "Ciencias Naturales Nivel 1 - Trimestre 2",
+                                "Ciencias Naturales Nivel 1 - Trimestre 3", "Ciencias Naturales Nivel 2 - Trimestre 1",
+                                "Ciencias Naturales Nivel 2 - Trimestre 2", "Ciencias Naturales Nivel 2 - Trimestre 3",
+                                "Ciencias Sociales Nivel 1 - Trimestre 1", "Ciencias Sociales Nivel 1 - Trimestre 2",
+                                "Ciencias Sociales Nivel 1 - Trimestre 3", "Ciencias Sociales Nivel 2 - Trimestre 1",
+                                "Ciencias Sociales Nivel 2 - Trimestre 2", "Ciencias Sociales Nivel 2 - Trimestre 3",
+                                "Geologia LOMLOE Nivel 1", "Geologia LOMLOE Nivel 2"];
+                }
+                else  if (nivel === "tipo7"){
+                    opciones = ["Matematicas 2ESO Nivel 2 - Trimestre 1", "Matematicas 2ESO Nivel 2 - Trimestre 2",
+                                "Matematicas 2ESO Nivel 2 - Trimestre 3", "Lengua Castellana 2ESO Nivel 2 - Trimestre 1",
+                                "Lengua Castellana 2ESO Nivel 2 - Trimestre 2", "Lengua Castellana 2ESO Nivel 2 - Trimestre 3",
+                                "Geografia 2ESO Nivel 2", "Historia 2ESO Nivel 2", "Fisica Nivel 2", "Quimica Nivel 2",
+                                "Fisica y Quimica Nivel 1","Ciencias Naturales 2ESO Nivel 2 - Trimestre 1",
+                                "Ciencias Naturales 2ESO Nivel 2 - Trimestre 2", "Ciencias Naturales 2ESO Nivel 2 - Trimestre 3",
+                                "Ciencias Sociales 2ESO Nivel 2 - Trimestre 1", "Ciencias Sociales 2ESO Nivel 2 - Trimestre 2",
+                                "Ciencias Sociales 2ESO Nivel 2 - Trimestre 3"];
+                }
+                else if (nivel === "tipo8"){
+                    opciones = ["Biologia 3ESO Trimestre 1","Biologia 3ESO Trimestre 2","Biologia 3ESO Trimestre 3",
+                                "Lengua Castellana 3ESO Nivel 1", "Fisica y Quimica 3ESO Nivel 1"];
+                }
+                else if (nivel === "tipo9") {
+                    textarea.style.display = "block";
+                    libros.style.display = "none";
+                    librol.style.display = "none";
+                }
+                //un foreach que pones todos los libros que hay en la editorial por cada tipo de curso.
+                for (const libro of opciones) {
+                const option = document.createElement("option");
+                option.value = libro;
+                option.textContent = libro;
+                libros.appendChild(option);
+                }
+            }
+        //Esta es una simple función que hace que cambie la barra de objetos en la sección excepcional por una caja para poner datos libremente.
+        function verificarNivel() {
+            const nivel = document.getElementById("Tipo").value;
+            const textarea = document.getElementById("titulo");
+            //Para que esto funcione, ambas barras de objetos deben de intercambiar de estados visuales. Con esto ambas barra y textarea cambian posiciones de Oculto a visible.
+            textarea.style.display = nivel === "tipo9" ? "block" : "none";
+            libros.style.display = nivel === "tipo9" ? "none" : "block"; 
+            librol.style.display = nivel === "tipo9" ? "none" : "block"; 
+        }
+        //Una simple función que corta las 2 letras del final, que son los contadores en la ID. Luego explico el porqué
+        function Cortar(input){
+            return input.slice(0,-2);
+        }
+        function Cargar(){
+                //Esta función solo se una vez en el update. En ella tienes que poner en el textarea la ID con el contador en específico.
+                IdenBase = document.getElementById('ID').value;
+                //Para que no dé problemas a la hora de mostrar el resto de los pedidos con esa ID, se les corta el contador.
+                Iden = Cortar(IdenBase);
+                console.log("Id:",Iden);
+                //Carga el pedido en específco. Haciendo una consulta por la ID.
+                const response = fetch(`/query?parameter=ID&value=${encodeURIComponent(Iden)}`)
+                    .then(response => {
+                    //Si no hay ese pedido lanza error 404 y alerta de que no está.
+                    if (response.status === 404) {
+                        alert('No hay ningún registro parecido.');
+                    } 
+                    return response.json();})
+                    //Si hay, se llena la tabla celda por celda.
+                    .then(data => {
+                        const tableBody = document.getElementById('data-body');
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td>${row.ID}</td>
+                            <td>${row.Cliente}</td>
+                            <td>${row.Fecha}</td>
+                            <td>${row.Libro}</td>
+                            <td>${row.Curso}</td>
+                            <td>${row.Cantidad}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching data:', error));  
+        }
+
+        function CargarFiltro(){
+                //Casi igual al método de consultar. solo cambia el formato de la consulta de ID para evitar conflictos. Las rutas de consulta están en el server.js
+                Iden = document.getElementById('ID').value;
+                const response = fetch(`/idquery?value=${encodeURIComponent(Iden)}`)
+                    .then(response => {
+                    if (response.status === 404) {
+                        alert('No hay ningún registro parecido.');
+                    }  
+                    return response.json();})
+                    .then(data => {
+                        const tableBody = document.getElementById('data-body');
+                        data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                            <td>${row.ID}</td>
+                            <td>${row.Cliente}</td>
+                            <td>${row.Fecha}</td>
+                            <td>${row.Libro}</td>
+                            <td>${row.Curso}</td>
+                            <td>${row.Cantidad}</td>
+                            `;
+                            tableBody.appendChild(tr);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching data:', error));  
+        }
+        //El método está igual que en database.html. Salvo que usa la ID del textarea y la borra, vacía la tabla y la rellena.
+        function Borrar(){
+            const tableBody = document.getElementById('data-body');
+            const id = document.getElementById('ID').value;
+            fetch(`/delete?id=${encodeURIComponent(id)}`, {
+                method: 'DELETE',
+            })
+                .then(response => {
+                if (!response.ok) {
+                    throw new Error('Fallo en la red');
+                }
+                return response.json();
+                })
+                .then(data => {
+                if (data.success) {
+                    alert(`La ID ${id} se borró exitosamente.`);
+                    tableBody.innerHTML = '';
+                    Cargar();
+                } else {
+                    alert(`La ID ${idToDelete} no está aquí.`);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        function Contar(){
+            //Por defecto el contador está a 1. Este prompt hace que el contador cambie de número el cual empieza.
+            const customValue = prompt("Cuantos libros llevas pues?", c);
+            if (customValue && !isNaN(customValue)) {
+                c = parseInt(customValue, 10);
+                alert(`Vas por el libro: ${c}`);
+            } 
+            //No le puedes poner menos de 0.
+            else {
+                 alert("No des numeros negativos ni ceros!");
+            }
+        }
+        function Crear() {
+            let Libro
+            let Curso
+            //Coge la ID del textarea
+            const baseId = document.getElementById('ID').value;
+            if (!baseId) {
+                alert("Debes poner una ID!");
+                return;
+            }
+            //Se le añade el contador al ID
+            const ID = `${baseId}-${c}`;
+            //Se le suma 1 a cada pedido.
+            c++;
+            //Coge los atributos de cada pedido.
+            const Cliente = document.getElementById('Cliente').value;
+            const Fecha = document.getElementById('Fecha').value;
+            Libro = document.getElementById('Libros').value;
+            Curso = document.getElementById('Tipo').value;
+            const Cantidad = document.getElementById('Cantidad').value;
+            const tableBody = document.getElementById('data-body');
+            //La sección excepcional funciona extraño. Por lo que necesité un query selector para coger el textarea anidado que tiene adentro.
+            if (Libro == ''){
+                const Busca = document.getElementById('titulo');
+                Libro = Busca.querySelector("#titulos").value;
+            }
+            if (Curso == 'tipo1'){
+                Curso = "Ed. Basica";
+            } else if (Curso == 'tipo2'){
+                Curso = "Ed. Primaria";
+            } else if (Curso == 'tipo3'){
+                Curso = "Ed. con Pictos";
+            } else if (Curso == 'tipo4'){
+                Curso = "Ed. Permanente";
+            } else if (Curso == 'tipo5'){
+                Curso = "FP Basica";
+            } else if (Curso == 'tipo6'){
+                Curso = "Ed. 1ESO";
+            } else if (Curso == 'tipo7'){
+                Curso = "Ed. 2ESO";
+            } else if (Curso == 'tipo8'){
+                Curso = "Ed. 3ESO";
+            } else if (Curso == 'tipo9'){
+                Curso = "Sec. Excepcional";
+            }
+            //Coge los datos en un objeto JSON. Crea el resultado y vacía la tabla para llenarla de nuevo con la consulta del nuevo objeto creado.
+            fetch('/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ID, Cliente, Fecha, Libro, Curso, Cantidad}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                tableBody.innerHTML='';
+                CargarFiltro();
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('An error occurred.');
+            });
+        }
+        //Vacía la tabla para llenarla con los datos de la consulta.
+        function Buscar(){
+            const tableBody = document.getElementById('data-body');
+            tableBody.innerHTML='';
+            CargarFiltro();
+        }
+        //Parecida a la que está en database.html pero con sus trucos.
+        async function Cambiar() {
+            const tableBody = document.getElementById('data-body');
+            //Coge la ID del textarea en lugar de un prompt. Debes poner en el textarea la ID que quieres.
+            const iden = document.getElementById('ID').value;
+                if (!iden) {
+                    alert("Necesito una ID!");
+                    return;
+                }
+            //Comienza el bucle eterno.
+            let continuar = true;
+            while(continuar){
+                let columna;
+                while (true) {
+                    //De nuevo solo se sale si escoger I o X en las opciones.
+                    const parameter = prompt("Escoje:\nI para IDs\nC para Clientes\nF para Fechas\nT para Titulos de libro\nE para Cursos\nN para Cantidades\nX para cambiar nada más").toUpperCase();
+                    if (parameter === 'I') {
+                        columna = 'ID';
+                        continuar = false;
+                        break;
+                    } else if (parameter === 'C') {
+                        columna = 'Cliente';
+                        break;
+                    } else if (parameter === 'F') {
+                        columna = 'Fecha';
+                        break;
+                    } else if (parameter === 'T') {
+                        columna = 'Libro';
+                        break;
+                    } else if (parameter === 'E') {
+                        columna = 'Curso';
+                        break;
+                    } else if (parameter === 'N') {
+                        columna = 'Cantidad';
+                        break;
+                    }
+                    else if (parameter === 'X') {
+                        continuar = false;
+                        alert("Cambio cancelado.");
+                        return;
+                    } else {
+                        alert("Escribe una de las 7 letras anteriores.");
+                        return;
+                    }
+                }
+            //Pide el valor nuevo.    
+            const value = prompt(`Que quieres poner por ${columna}:`);
+                if (!value) {
+                    alert("Dame un nuevo valor anda");
+                    return;
+                }
+                await fetch('http://localhost:3000/update', {
+                    method: 'PUT',
+                    headers: {'Content-Type': 'application/json',},
+                    body: JSON.stringify({ iden, columna, value }),
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    //Una vez hecho el nuevo update.Lanzará una query con el contador cortado, para mostrar todas los pedidos con esa ID en la tabla.
+                    if (data.success) {
+                        alert('Cambio hecho.');
+                        tableBody.innerHTML='';
+                        Cargar();  
+                    } else {
+                        alert(`No se encontró la ID ${iden}`);
+                    }
+                })
+                .catch(error => console.error('Error de actualización:', error));
+                }
+            }    
+        </script>   
+    </head>
+    <body>
+        <h2>Empecemos con los nuevas entregas de pedidos!</h2>
+        <h3>Porfa dame los datos.</h3>
+        <table id="options-table">
+            <tr>
+            <td>
+                <div style="display: flex; align-items: center;">
+                <label for="textarea">ID</label>
+                <span style="display: block; margin-right: 70px;"></span>
+                <textarea rows="1" cols="10" placeholder="Dame la ID" id="ID"></textarea>
+                </div>
+            </td>
+            <td>
+                <label for="textarea" style="margin-left: 10px;">Cliente</label>
+                <textarea rows="1" cols="25" style="margin-left: 5px;" placeholder="Como se llama el cliente?" id="Cliente"></textarea>
+            </td>
+            <td>
+                <label for="textarea" style="margin-left: 10px;">Fecha</label>
+                <textarea rows="1" cols="15" style="margin-left: 5px;" placeholder="Que día es hoy?" id="Fecha"></textarea>
+            </td>
+            <td>
+                <label for="textarea" style="margin-left: 10px;">Cantidad</label>
+                <textarea rows="1" cols="5" style="margin-left: 5px;" placeholder="nº" id="Cantidad"></textarea></td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="Tipo" >Tipo de libro</label>
+                    <select id="Tipo" onchange="actualizarLibros(); verificarNivel()">
+                        <option value="">Que curso buscas?</option>
+                        <option value="tipo1">Educación Básica</option>
+                        <option value="tipo2">Educación Primaria</option>
+                        <option value="tipo3">Libros de Pictos</option>
+                        <option value="tipo4">Educación Permanente</option>
+                        <option value="tipo5">FP Básica</option>
+                        <option value="tipo6">1º ESO</option>
+                        <option value="tipo7">2º ESO</option>
+                        <option value="tipo8">3º ESO</option>
+                        <option value="tipo9">Sección Excepcional</option>
+                    </select>
+                </td>
+                <tr>
+                    <td>
+                        <label id="librol" for="Libros" style="display: block;">Título</label>
+                        <select id="Libros" style="display: block;">
+                            <option value="">Cual quieres?</option>
+                        </select>
+                    </td>
+                </tr>
+            </tr>  
+            <tr id="titulo" style="display: none;">
+                <td>
+                    <label for="titulos">Título Específico:</label>
+                    <br/>
+                    <textarea id="titulos" rows="2" cols="20">Competencia clave - Nivel</textarea>
+                </td>
+            </tr>
+        </table>
+    <br></br>
+    <button onclick="Crear()">Hacer pedido</button>
+    <button onclick="Buscar()">Buscar pedido específico</button>
+    <button onclick="Contar()">Fijar contador</button>
+    <button onclick="Cambiar()">Cambiar pedido</button>
+    <button onclick="Borrar()">Borrar pedido</button>
+    <button onclick="location.href='database.html'" style="margin-left: 100px;">Consultar base de datos</button>
+    <button onclick="location.href='repmaker.html'">Hacer informe mensual</button>
+    <br></br>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Título</th>
+                <th>Curso</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody id="data-body">          
+        </tbody>
+    </table>   
+    </body>
+</html>
